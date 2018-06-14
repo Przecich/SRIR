@@ -7,7 +7,7 @@ class CodeRepository {
     if (codes.isEmpty) {
       None
     } else {
-      val summary: ArrayBuffer[(String, DifferenceSummary)] = codes.map(repoCode => (repoCode, DifferenceCalculator.calculate(code, repoCode)))
+      val summary: ArrayBuffer[(String, DifferenceSummary)] = codes.map(repoCode => (repoCode, DifferenceUtility.calculateDifference(code, repoCode)))
       val sorted = summary.minBy(tuple => tuple._2.absoluteDifference)
       Some(sorted)
     }

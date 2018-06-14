@@ -17,7 +17,7 @@ object Main extends App with Directives with StrictLogging {
   implicit val as: ActorSystem = ActorSystem("js-eval")
   implicit val ec: ExecutionContext = as.dispatcher
   implicit val mat: ActorMaterializer = ActorMaterializer()
-  var repo = new CodeRepository;
+  var repo = new CodeRepository
   val nashorn = new ScriptEngineManager().getEngineByName("nashorn")
 
   val endpoints =
