@@ -17,7 +17,7 @@ object Main extends App with Directives with StrictLogging {
   implicit val as: ActorSystem = ActorSystem("js-eval")
   implicit val ec: ExecutionContext = as.dispatcher
   implicit val mat: ActorMaterializer = ActorMaterializer()
-
+  var repo = new CodeRepository
   val nashorn = new ScriptEngineManager().getEngineByName("nashorn")
 
   val endpoints =
@@ -26,12 +26,15 @@ object Main extends App with Directives with StrictLogging {
         Flow.fromFunction {
           case msg: TextMessage =>
             val text = msg.getStrictText
+            val similar = repo.getMostSimilarCode(text)
+            val appendedMsg = DifferenceUtility.summaryPrinter(similar)
+            repo.addCodeToRepository(text)
             val res = Try(nashorn.eval(text))
             res match {
               case Success(null) =>
                 TextMessage("null")
               case Success(result: ScriptObjectMirror) =>
-                TextMessage(result.asScala.toString)
+                TextMessage(result.asScala.toString + "\n" + appendedMsg)
               case Failure(ex) =>
                 TextMessage(ex.getMessage)
             }
