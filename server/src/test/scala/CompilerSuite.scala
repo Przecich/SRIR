@@ -1,6 +1,6 @@
 import org.scalatest.FlatSpec
 
-class ScalaCompilerSuite extends FlatSpec {
+class CompilerSuite extends FlatSpec {
   it should "contain a string \"Compilation succeeded\" when a compilation indeed succeeds" in {
     assert(Compiler.compile("print('Test');").contains("Compilation succeeded"))
   }
