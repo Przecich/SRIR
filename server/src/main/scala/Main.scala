@@ -25,7 +25,7 @@ object Main extends App with Directives with StrictLogging {
             val appendedMsg = DifferenceUtility.summaryPrinter(similar)
             repo.addCodeToRepository(text)
 
-            TextMessage(ScalaCompiler.compile(text) + "\n\n" + appendedMsg)
+            TextMessage(Compiler.compile(text) + "\n\n" + appendedMsg)
           case _ =>
             TextMessage("")
         }

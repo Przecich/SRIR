@@ -4,7 +4,7 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
-object ScalaCompiler {
+object Compiler {
   private final val nashorn: ScriptEngine = new ScriptEngineManager().getEngineByName("nashorn")
 
   def compile(sourceCode: String): String = {
