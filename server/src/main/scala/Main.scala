@@ -21,11 +21,21 @@ object Main extends App with Directives with StrictLogging {
         Flow.fromFunction {
           case msg: TextMessage =>
             val text = msg.getStrictText
-            val similar = repo.getMostSimilarCode(text)
-            val appendedMsg = DifferenceUtility.summaryPrinter(similar)
-            repo.addCodeToRepository(text)
+            val compilerReport = Compiler.compile(text)
+            val successfulCompilation = compilerReport contains "succeeded"
+            var repoAnalysis = ""
+            if(successfulCompilation){
+              val similar = repo getMostSimilarCode text
+              repoAnalysis = "\n\n" + DifferenceUtility.summaryPrinter(similar)
 
-            TextMessage(Compiler.compile(text) + "\n\n" + appendedMsg)
+              val codeAlreadyInRepo = similar.isDefined && similar.get._2.absoluteDifference == 0
+              if(!codeAlreadyInRepo){
+                repo addCodeToRepository text
+                logger info "Added new code to repository"
+              }
+            }
+
+            TextMessage(compilerReport + repoAnalysis)
           case _ =>
             TextMessage("")
         }

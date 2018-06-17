@@ -26,8 +26,8 @@ object Compiler {
     result match {
       case Success(null) => compilationSuccessMsg
       case Success(res: ScriptObjectMirror) => compilationSuccessMsg + ":\n " + res.asScala.toString
+      case Success(res) => compilationSuccessMsg + ":\n " + res.toString
       case Failure(ex) => compilationErrorMsg + ":\n " + ex.getMessage
-      case _ => compilationErrorMsg
     }
   }
 }
