@@ -32,9 +32,11 @@ object Main extends App with Directives with StrictLogging {
             val res = Try(nashorn.eval(text))
             res match {
               case Success(null) =>
-                TextMessage("null")
+                TextMessage("null" + "\n" + appendedMsg)
               case Success(result: ScriptObjectMirror) =>
                 TextMessage(result.asScala.toString + "\n" + appendedMsg)
+              case Success(result) =>
+                TextMessage(result.toString + "\n" + appendedMsg)
               case Failure(ex) =>
                 TextMessage(ex.getMessage)
             }
