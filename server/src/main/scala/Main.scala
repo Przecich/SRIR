@@ -26,9 +26,14 @@ object Main extends App with Directives with StrictLogging {
         Flow.fromFunction {
           case msg: TextMessage =>
             val text = msg.getStrictText
-            val similar = repo.getMostSimilarCode(text)
-            val appendedMsg = DifferenceUtility.summaryPrinter(similar)
-            repo.addCodeToRepository(text)
+            val similar = repo getMostSimilarCode text
+            val codeAlreadyInRepo = similar.isDefined && similar.get._2.absoluteDifference == 0
+            if(!codeAlreadyInRepo){
+              repo addCodeToRepository text
+              logger info "Added code to repository"
+            }
+            val appendedMsg = DifferenceUtility summaryPrinter similar
+
             val res = Try(nashorn.eval(text))
             res match {
               case Success(null) =>
