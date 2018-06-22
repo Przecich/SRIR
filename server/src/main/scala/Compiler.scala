@@ -4,18 +4,18 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
-/** Provides the means to evaluate a JavaScript source code at a runtime. */
+/** Provides the means to evaluate a source code at a runtime. */
 object Compiler {
-  /** The engine which is used to evaluate the JavaScript source code. */
+  /** The engine which is used to evaluate the source code. */
   private final val nashorn: ScriptEngine = new ScriptEngineManager().getEngineByName("nashorn")
 
   /**
-    * Evaluates the specified JavaScript source code and returns the evaluation result.
+    * Evaluates the specified source code and returns the evaluation result.
     *
     * The returned evaluation result will contain a precise compilation error message should the specified
     * source code be impossible to compile.
     *
-    * @param sourceCode A JavaScript source code to evaluate.
+    * @param sourceCode A source code to evaluate.
     * @return A message depicting the evaluation status.
     */
   def compile(sourceCode: String): String = {

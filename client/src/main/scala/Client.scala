@@ -9,29 +9,41 @@ import akka.stream.scaladsl.{Keep, Sink, Source}
 
 import scala.concurrent.Future
 
-object Client {
-  val pattern = """\s(\w+.txt)$""".r
+/**
+  * Client class handling connection and displaying response
+  *
+  */
+class Client( connectionData:(String,String)) {
 
-  val printSink: Sink[Message, Future[Done]] =
+  private val pattern = """\s(\w+.txt)$""".r
+  private val  logger = new Logger
+
+  private val printSink: Sink[Message, Future[Done]] =
     Sink.foreach {
       case message: TextMessage.Strict =>
-        println(message.text)
+        println(message.text+'\n')
     }
 
-  def run(address:String):Unit = {
+
+  /**
+    * Client class handling connection and displaying response
+    *
+    */
+  def run(): Unit = {
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
     import system.dispatcher
 
-
-    val webSocketFlow =
-      Http().webSocketClientFlow(WebSocketRequest("ws://localhost:9321/endpoint"))
 
     val command = getCommand()
     val sourceCode = getSourceCode(command)
 
 
     val helloSource = Source.single(TextMessage(sourceCode))
+
+    val webSocketFlow =
+      Http().webSocketClientFlow(WebSocketRequest("ws://" + connectionData._1 + ":"
+        + connectionData._2 + "/endpoint"))
 
     val (upgradeResponse, closed) =
       helloSource
@@ -41,11 +53,12 @@ object Client {
 
     val connected = upgradeResponse.map { upgrade =>
       if (upgrade.response.status == StatusCodes.SwitchingProtocols) {
-        run(address)
+        run()
       } else {
         throw new RuntimeException(s"Connection failed: ${upgrade.response.status}")
       }
     }
+
   }
 
   private def getCommand(): String = {
@@ -57,8 +70,15 @@ object Client {
   }
 
   def getSourceCode(command: String): String = {
-    if (command.startsWith("/f"))
-      scala.io.Source.fromFile(trimCommand(command).trim).getLines().mkString
+    if (command.startsWith("/f")) {
+      val code = scala.io.Source.fromFile(trimCommand(command).trim).getLines().mkString
+      if (code.isEmpty) {
+        logger.error("Couldn't load file")
+        return "NO command"
+      } else {
+        code
+      }
+    }
     else
       command
   }
